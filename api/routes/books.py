@@ -71,8 +71,3 @@ async def get_book_by_id(book_id: int):
             content={"detail": "Book not found"}
         )
     return book
-
-
-@router.get("/stage2", status_code=status.HTTP_200_OK)
-async def stage2_endpoint():
-    return {"message": "Stage 2 endpoint works!"}
