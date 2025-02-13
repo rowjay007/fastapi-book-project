@@ -1,0 +1,41 @@
+name: Deployment
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Build Docker image
+        run: |
+          docker build -t fastapi-app .
+
+      - name: Save Docker image as tar
+        run: |
+          docker save -o fastapi-app.tar fastapi-app
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: fastapi-app
+          path: fastapi-app.tar
+
+      - name: Deploy to Azure VM
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.AZURE_VM_IP }}
+          username: ${{ secrets.AZURE_VM_USER }}
+          key: ${{ secrets.AZURE_VM_KEY }}
+          port: 22
+          script: |
+            docker load < fastapi-app.tar
+            docker stop $(docker ps -q) || true
+            docker rm $(docker ps -a -q) || true
+            docker run -d -p 8000:8000 --name fastapi-app fastapi-app
+            sudo systemctl restart nginx
