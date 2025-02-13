@@ -25,7 +25,6 @@ jobs:
           name: fastapi-app
           path: fastapi-app.tar
 
-      # Copy the Docker image to the Azure VM
       - name: Transfer Docker image to Azure VM
         uses: appleboy/scp-action@master
         with:
@@ -36,7 +35,6 @@ jobs:
           source: "fastapi-app.tar"
           target: "/home/${{ secrets.AZURE_VM_USER }}/"
 
-      # SSH into the VM and deploy the container
       - name: Deploy to Azure VM
         uses: appleboy/ssh-action@master
         with:
