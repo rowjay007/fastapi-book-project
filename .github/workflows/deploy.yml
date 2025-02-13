@@ -19,6 +19,9 @@ jobs:
       - name: Save Docker image as tar
         run: docker save -o fastapi-app.tar fastapi-app
 
+      - name: Fix permissions for fastapi-app.tar
+        run: chmod 644 fastapi-app.tar  
+
       - name: Upload artifact
         uses: actions/upload-artifact@v4  
         with:
